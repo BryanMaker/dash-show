@@ -16,7 +16,15 @@ class DesktopDash extends Clutter.Actor {
         Main.overview.connectObject('shown', () => this._restoreDashFromBg(), this);
         Main.overview.connectObject('hidden', () => this._moveDashToBg(), this);
 
-        // this._moveDashToBg();
+        // 初始化dash所在层
+        if (Main.overview.visible) {
+            this._restoreDashFromBg();
+        } else {
+            this._moveDashToBg();
+        }
+
+        // 处理显示变化
+        Main.layoutManager.connectObject('monitors-changed', () => this._recenterDash(), this);
 
         // 处理 Show Apps 点击事件
         this._dash.showAppsButton.connectObject('notify::checked', (button) => {
@@ -39,12 +47,6 @@ class DesktopDash extends Clutter.Actor {
         if (Main.overview._overview._controls.get_children().includes(this._dash)) {
             Main.overview._overview._controls.remove_child(this._dash);
             Main.layoutManager._backgroundGroup.add_child(this._dash);
-
-            // 加入Chrome
-            //Main.layoutManager.addChrome(this._dash, {
-            //    affectsInputRegion: true,
-            //    trackFullscreen: true,
-            //});
         }
     }
 
@@ -52,7 +54,6 @@ class DesktopDash extends Clutter.Actor {
         // 卸载扩展时恢复 Dash 到概览
         if (this._dash && (this._dash.get_parent() === Main.layoutManager._backgroundGroup)) {
             this._dash.get_parent().remove_child(this._dash);
-            //Main.layoutManager.removeChrome(this._dash);
             Main.overview._overview._controls.insert_child_at_index(this._dash, this._dash_idx);
         }
     }
@@ -64,6 +65,7 @@ class DesktopDash extends Clutter.Actor {
     }
 
     destroy() {
+        Main.layoutManager.disconnectObject(this);
         Main.overview.disconnectObject(this);
 
         this._dash?.showAppsButton?.disconnectObject(this);
