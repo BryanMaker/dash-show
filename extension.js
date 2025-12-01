@@ -36,9 +36,6 @@ class DesktopDash extends Clutter.Actor {
         // 处理dash大小变化
         this._dash.connectObject('notify::width', () => this._recenterDash(), this);
         this._dash.connectObject('notify::height', () => this._recenterDash(), this);
-        // 无法监听屏幕大小变化信号，当设置分辨率缩放和旋转方向改变后，桌面dash位置错误。
-        // 此时如果打开Overview，dash受概览布局管理它的大小会自适应。
-        // 由于dash大小变换触发重新设置位置。这是一个妥协的可接受方案。
         this._recenterDash();
     }
 
@@ -78,6 +75,10 @@ class DesktopDash extends Clutter.Actor {
 });
 
 export default class DashExtension extends Extension {
+    constructor(metadata) {
+        super(metadata);
+    }
+
     _initDesktopDash() {
         this._desktopDash = new DesktopDash();
     }
