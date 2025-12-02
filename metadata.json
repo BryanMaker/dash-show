@@ -1,10 +1,10 @@
 {
-  "description": "none",
+  "description": "It's a very simple extension that simply moves the dash from\n\n the overview layer to the background layer, and moves the dash back\n\n from the background layer to the overview layer when the overview is opened.",
   "name": "Dash Show",
   "shell-version": [
     "49"
   ],
-  "url": "none",
+  "url": "https://github.com/BryanMaker/dash-show",
   "uuid": "dash-show@BryanMaker",
-  "version": 0.1
+  "version": 1
 }

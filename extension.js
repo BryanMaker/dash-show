@@ -12,35 +12,39 @@ class DesktopDash extends Clutter.Actor {
         this._dash = Main.overview.dash;
         this._dash_idx = Main.overview._overview._controls.get_children().indexOf(this._dash);
 
-        // 自动移动dash
+        // Automatic move dash.
         Main.overview.connectObject('shown', () => this._restoreDashFromBg(), this);
         Main.overview.connectObject('hidden', () => this._moveDashToBg(), this);
 
-        // 初始化dash所在层
+        // Initialize dash to the corresponding layer based on overview's visibility.
         if (Main.overview.visible) {
             this._restoreDashFromBg();
         } else {
             this._moveDashToBg();
         }
 
-        // 处理显示变化
+        // Repositioning when display changes such as Orientation Resolution Refresh rate and Scale.
         Main.layoutManager.connectObject('monitors-changed', () => this._recenterDash(), this);
 
-        // 处理 Show Apps 点击事件
+        // Handling the response when the "Show Apps" button is clicked on the dash.
         this._dash.showAppsButton.connectObject('notify::checked', (button) => {
             if (button.checked) {
-                Main.overview.showApps()
-            }
+                // Main.overview.show() // Show overview page. Comment out else branch if use this function call.
+                Main.overview.showApps() // Show app gride page.
+            } // else { // Go directly from app grid page to desktop, skipping the overview page. This will skip over-animation!!!
+                // if (Main.overview.visible) {
+                //     Main.overview.hide()
+                // }
+            // }
         }, this);
 
-        // 处理dash大小变化
+        // Repositioning when dash size changes
         this._dash.connectObject('notify::width', () => this._recenterDash(), this);
         this._dash.connectObject('notify::height', () => this._recenterDash(), this);
         this._recenterDash();
     }
 
     _moveDashToBg() {
-        // 移除 Dash 从概览
         if (Main.overview._overview._controls.get_children().includes(this._dash)) {
             Main.overview._overview._controls.remove_child(this._dash);
             Main.layoutManager._backgroundGroup.add_child(this._dash);
@@ -48,7 +52,6 @@ class DesktopDash extends Clutter.Actor {
     }
 
     _restoreDashFromBg() {
-        // 卸载扩展时恢复 Dash 到概览
         if (this._dash && (this._dash.get_parent() === Main.layoutManager._backgroundGroup)) {
             this._dash.get_parent().remove_child(this._dash);
             Main.overview._overview._controls.insert_child_at_index(this._dash, this._dash_idx);
@@ -56,7 +59,6 @@ class DesktopDash extends Clutter.Actor {
     }
     
     _recenterDash() {
-        // 获取主屏幕尺寸并设置dash位置
         let monitor = Main.layoutManager.primaryMonitor;
         this._dash.set_position((monitor.width - this._dash.width) / 2, monitor.height - this._dash.height);
     }
