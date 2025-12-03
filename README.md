@@ -16,7 +16,7 @@ it's perfectly fine to just put the dash in the background.
 ## Known problem
 
 Unable to move the dash back to overview at the start of the showing of 
-overview. It will only move back when overview is shown by using signal 
+overview. It will only move back when overview has been shown by using signal 
 "shown" of Main.overview. There is no "showing" signal in GNOME version 49.
 
 ## Warning
