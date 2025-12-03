@@ -41,13 +41,13 @@ class DesktopDash extends Clutter.Actor {
         // Repositioning when dash size changes
         this._dash.connectObject('notify::width', () => this._recenterDash(), this);
         this._dash.connectObject('notify::height', () => this._recenterDash(), this);
-        this._recenterDash();
     }
 
     _moveDashToBg() {
         if (Main.overview._overview._controls.get_children().includes(this._dash)) {
             Main.overview._overview._controls.remove_child(this._dash);
             Main.layoutManager._backgroundGroup.add_child(this._dash);
+            this._recenterDash();
         }
     }
 
@@ -59,8 +59,10 @@ class DesktopDash extends Clutter.Actor {
     }
     
     _recenterDash() {
-        let monitor = Main.layoutManager.primaryMonitor;
-        this._dash.set_position((monitor.width - this._dash.width) / 2, monitor.height - this._dash.height);
+        if (!Main.overview.visible) {
+            let monitor = Main.layoutManager.primaryMonitor;
+            this._dash.set_position((monitor.width - this._dash.width) / 2, monitor.height - this._dash.height);
+        }
     }
 
     destroy() {
