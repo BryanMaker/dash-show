@@ -24,7 +24,12 @@ class DesktopDash extends Clutter.Actor {
         }
 
         // Repositioning when display changes such as Orientation Resolution Refresh rate and Scale.
-        Main.layoutManager.connectObject('monitors-changed', () => this._recenterDash(), this);
+        Main.layoutManager.connectObject('monitors-changed', () => {
+            if (!Main.overview.visible) {
+                this._restoreDashFromBg();
+                this._moveDashToBg();
+            }
+        }, this);
 
         // Handling the response when the "Show Apps" button is clicked on the dash.
         this._dash.showAppsButton.connectObject('notify::checked', (button) => {
