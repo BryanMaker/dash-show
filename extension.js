@@ -3,6 +3,7 @@ import St from 'gi://St';
 import GObject from 'gi://GObject';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import { Extension } from 'resource:///org/gnome/shell/extensions/extension.js';
+const DASH_MAX_HEIGHT_RATIO = 0.16;
 
 const DesktopDash = GObject.registerClass(
 class DesktopDash extends Clutter.Actor {
@@ -26,19 +27,19 @@ class DesktopDash extends Clutter.Actor {
         // Repositioning when display changes such as Orientation Resolution Refresh rate and Scale.
         Main.layoutManager.connectObject('monitors-changed', () => {
             if (!Main.overview.visible) {
-                this._restoreDashFromBg();
-                this._moveDashToBg();
+                this._resizeDash();
+                this._recenterDash();
             }
         }, this);
 
         // Handling the response when the "Show Apps" button is clicked on the dash.
         this._dash.showAppsButton.connectObject('notify::checked', (button) => {
             if (button.checked) {
-                // Main.overview.show() // Show overview page. Comment out else branch if use this function call.
-                Main.overview.showApps() // Show app gride page.
+                // Main.overview.show(); // Show overview page. Comment out else branch if use this function call.
+                Main.overview.showApps(); // Show app gride page.
             } // else { // Go directly from app grid page to desktop, skipping the overview page. This will skip over-animation!!!
                 // if (Main.overview.visible) {
-                //     Main.overview.hide()
+                //     Main.overview.hide();
                 // }
             // }
         }, this);
@@ -67,6 +68,14 @@ class DesktopDash extends Clutter.Actor {
         if (!Main.overview.visible) {
             let monitor = Main.layoutManager.primaryMonitor;
             this._dash.set_position((monitor.width - this._dash.width) / 2, monitor.height - this._dash.height);
+        }
+    }
+
+    _resizeDash() {
+        if (!Main.overview.visible) {
+            let monitor = Main.layoutManager.primaryMonitor;
+            const maxDashHeight = Math.round((monitor.height - Main.panel.height) * DASH_MAX_HEIGHT_RATIO);
+            this._dash.setMaxSize(monitor.width, maxDashHeight);
         }
     }
 
