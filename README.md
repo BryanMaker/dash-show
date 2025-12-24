@@ -21,3 +21,8 @@ This extension has only been tested and passed in the latest GNOME 49.
 
 1. I don't have time to maintain it, but anyone is welcome to fork it 
 to get the code or publish it to the GNOME extension store.
+
+## Acknowledgements:
+
+This extension references the implementation 
+at https://github.com/fthx/dock-express. Thank you.
