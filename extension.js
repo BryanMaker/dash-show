@@ -14,8 +14,10 @@ class DesktopDash extends Clutter.Actor {
         this._dash_idx = Main.overview._overview._controls.get_children().indexOf(this._dash);
 
         // Automatic move dash.
-        Main.overview.connectObject('shown', () => this._restoreDashFromBg(), this);
-        Main.overview.connectObject('hidden', () => this._moveDashToBg(), this);
+        Main.overview.connectObject(
+            'showing', () => this._restoreDashFromBg(), GObject.ConnectFlags.AFTER,
+            'hidden', () => this._moveDashToBg(), GObject.ConnectFlags.AFTER,
+            this);
 
         // Initialize dash to the corresponding layer based on overview's visibility.
         if (Main.overview.visible) {
@@ -30,7 +32,7 @@ class DesktopDash extends Clutter.Actor {
                 this._resizeDash();
                 this._recenterDash();
             }
-        }, this);
+        }, GObject.ConnectFlags.AFTER, this);
 
         // Handling the response when the "Show Apps" button is clicked on the dash.
         this._dash.showAppsButton.connectObject('notify::checked', (button) => {
@@ -42,11 +44,11 @@ class DesktopDash extends Clutter.Actor {
                 //     Main.overview.hide();
                 // }
             // }
-        }, this);
+        }, GObject.ConnectFlags.AFTER, this);
 
         // Repositioning when dash size changes
-        this._dash.connectObject('notify::width', () => this._recenterDash(), this);
-        this._dash.connectObject('notify::height', () => this._recenterDash(), this);
+        this._dash.connectObject('notify::width', () => this._recenterDash(), GObject.ConnectFlags.AFTER, this);
+        this._dash.connectObject('notify::height', () => this._recenterDash(), GObject.ConnectFlags.AFTER, this);
     }
 
     _moveDashToBg() {
@@ -104,7 +106,7 @@ export default class DashExtension extends Extension {
     enable() {
         if (Main.layoutManager._startingUp) {
             // Main.layoutManager.connectObject('startup-complete', this._initDesktopDash.bind(this), this);
-            Main.layoutManager.connectObject('startup-complete', () => this._initDesktopDash(), this);
+            Main.layoutManager.connectObject('startup-complete', () => this._initDesktopDash(), GObject.ConnectFlags.AFTER, this);
         } else {
             this._initDesktopDash();
         }
